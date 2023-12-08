@@ -2,8 +2,12 @@
 #ifndef FAULT_H
 #define FAULT_H
 
-#include "ship.h"
-#include "person.h"
+#include <stdbool.h>
+#include "../headers/ship.h"
+#include "../headers/person.h"
+
+struct Ship;
+struct Person;
 
 enum FaultLevel {
     SLIGHT,
@@ -14,18 +18,21 @@ enum FaultLevel {
 enum FaultType {
     ELEKTRIK,
     MEKANIK,
-    YANGIN,
-    SU_BATMASI,
+    HARARET,
     // ... diğer hata tipleri
 };
 
-typedef struct {
+typedef struct Fault{
     int faultID;
     char faultExplanation[100];
     enum FaultType type;
-    enum faultLevel level;
-    Person *kontrolgörevlisi;
+    enum FaultLevel level;
+    bool isRepaired;
+    struct Person *duzeltmeGorevlisi;
     // ... diğer özellikler
 } Fault;
+
+void waterTempControl(Ship *ship, int waterTemp);
+
 
 #endif // FAULT_H

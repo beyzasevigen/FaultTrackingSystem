@@ -2,8 +2,11 @@
 #ifndef PERSON_H
 #define PERSON_H
 
-#include "fault.h"
-#include "ship.h"
+#include "../headers/fault.h"
+#include "../headers/ship.h"
+
+struct Fault;
+struct Ship;
 
 enum PersonType {
     KONTROL_GOREVLISI,
@@ -16,9 +19,13 @@ typedef struct {
     char username[50];
     char password[50];
     enum PersonType type;
-    Fault *findFaultsByPerson(struct Person *self);
+    struct Fault *(*findFaultsByPerson)(struct Person *self);
 } Person;
 
-Fault *findFaultsByPerson(Person *self);
+struct Fault *findFaultsByPerson(struct Person *self);
+
+void assignDuzeltmeGorevlisi(struct Fault *fault, struct Person duzeltmeGorevlisi);
+void listAssignedPersonels(struct Fault *faults, int faultCount);
+
 
 #endif // PERSON_H
