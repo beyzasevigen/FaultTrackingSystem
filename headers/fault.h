@@ -16,8 +16,8 @@ enum FaultLevel {
 };
 
 enum FaultType {
-    ELEKTRIK,
-    MEKANIK,
+    YAG_BASINCI,
+    SU_SEVİYESİ,
     HARARET,
     // ... diğer hata tipleri
 };
@@ -28,11 +28,13 @@ typedef struct Fault{
     enum FaultType type;
     enum FaultLevel level;
     bool isRepaired;
+    bool isThereProblem;
     struct Person *duzeltmeGorevlisi;
     // ... diğer özellikler
 } Fault;
 
-void waterTempControl(Ship *ship, int waterTemp);
-
+void waterTempControl(Ship *ship, struct Fault *faults, int waterTemp);
+void waterLevelControl(Ship *ship, struct Fault *faults, int waterLevel);
+void oilPressureControl(Ship *ship, struct Fault *faults, int oilPressure);
 
 #endif // FAULT_H

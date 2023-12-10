@@ -19,13 +19,15 @@ typedef struct {
     char username[50];
     char password[50];
     enum PersonType type;
-    struct Fault *(*findFaultsByPerson)(struct Person *self);
+    //struct Fault *(*findFaultsByPerson)(struct Person *self);
 } Person;
 
-struct Fault *findFaultsByPerson(struct Person *self);
 
-void assignDuzeltmeGorevlisi(struct Fault *fault, struct Person duzeltmeGorevlisi);
-void listAssignedPersonels(struct Fault *faults, int faultCount);
+struct Person *createPerson(int personID, const char *personName, const char *username, const char *password, enum PersonType type);
 
+void assignDuzeltmeGorevlisi(struct Fault *fault, int duzeltmeGorevlisiID);
+
+//void listAssignedPersonels(struct Fault *faults, int faultCount);
+//struct Fault *findFaultsByPerson(struct Person *self);
 
 #endif // PERSON_H

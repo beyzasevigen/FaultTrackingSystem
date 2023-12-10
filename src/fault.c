@@ -2,25 +2,136 @@
 #include "../headers/ship.h"
 #include <stdio.h>
 
-void waterTempControl(Ship *ship, int waterTemp) {
+void waterTempControl(Ship *ship, struct Fault *faults, int waterTemp) {
     for (int i = 0; i < 5; ++i) { // Varsayılan olarak 5 bölümü varsayalım
-        if (ship->shipDepartments[i].departmentType == SU_TANKI) {
+        if (ship->departmentType == MOTOR) {
             // Su sıcaklığı kontrolü
-            if (ship->shipDepartments[i].waterTemp > 100) {
+            if (ship->waterTemp > 100) {
                 // Hararet hatası
                 struct Fault tempError;
-                tempError.faultID = generateHataID(); // Örnek bir hata ID üretme fonksiyonu
+                tempError.faultID = 1; // Örnek bir hata ID üretme fonksiyonu
                 tempError.type = HARARET;
                 tempError.level = SEVERE;
-                sprintf(tempError.faultExplanation, "Su sıcaklığı %d dereceye ulaştı. Hararet hatası!", ship->shipDepartments[i].waterTemp);
+                tempError.isRepaired = false;
+                tempError.isThereProblem = true;
+                tempError.duzeltmeGorevlisi = NULL; // İlk başta atanmamış.
+
+                sprintf(tempError.faultExplanation, "Su sıcaklığı %d dereceye ulaştı. Hararet hatası!", ship->waterTemp);
                 
-                // Hata bilgilerini dosyaya yaz
-                //writeHataToFile(&tempError);
-                
+                for (int j = 0; j < 100; ++j) {
+                    if (!faults[j].isThereProblem) {
+                        faults[j] = tempError;
+                        break;
+                    }
+
+                }
                 // Kullanıcıyı uyar
-                printf("Uyarı: Gemide hararet hatası! Hata ID: %d, Bölüm: %s, Seviye: %s\n", 
-                       tempError.faultID, ship->shipDepartments[i].departmentName, "CİDDİ");
+                printf("Uyarı: Gemide hararet hatası! Hata ID: %d, hatalı bölüm: %s\n, Seviye: %s\n", 
+                       tempError.faultID, "MOTOR", "CİDDİ");
+            }   else {
+                // Su sıcaklığı sorunu olmadığında
+                struct Fault tempError;
+                tempError.isThereProblem = false; // Hata yok
             }
         }
     }
 }
+
+void waterLevelControl(Ship *ship, struct Fault *faults, int waterLevel) {
+    if (ship->departmentType == SU_TANKI) {
+        if (ship->waterLevel < 30) {
+            // Su seviyesi hatası
+            struct Fault waterLevelError;
+            waterLevelError.faultID = 2;
+            waterLevelError.type = SU_SEVİYESİ; // Örnek bir hata tipi, uygun olanı seçiniz
+            waterLevelError.level = SEVERE; // Örnek bir hata seviyesi, uygun olanı seçiniz
+            waterLevelError.isRepaired = false;
+            waterLevelError.isThereProblem = true;
+            waterLevelError.duzeltmeGorevlisi = NULL; // İlk başta atanmamış.
+
+                sprintf(waterLevelError.faultExplanation, "Su seviyesi %f%%'nın altına düştü. Su seviyesi hatası!", waterLevel);
+
+                for (int j = 0; j < 100; ++j) {
+                    if (!faults[j].isThereProblem) {
+                    faults[j] = waterLevelError;
+                    break;
+                    }       
+                }
+
+                printf("Uyarı: Su seviyesi hatası! Hata ID: %d, Seviye: %s\n", waterLevelError.faultID, "CİDDİ");
+            }
+        }
+    }
+
+void oilPressureControl(Ship *ship, struct Fault *faults, int oilPressure) {
+    for (int i = 0; i < 5; ++i) {
+        if (ship->departmentType == YAG_TANKI) {
+            // Yağ basıncı kontrolü
+
+            if (oilPressure < 20) {
+                // Yağ basıncı düşük uyarısı
+                struct Fault oilPressureError;
+                oilPressureError.faultID = 3;
+                oilPressureError.type = YAG_BASINCI;
+                oilPressureError.level = SLIGHT;
+                oilPressureError.isRepaired = false;
+                oilPressureError.isThereProblem = true;
+                oilPressureError.duzeltmeGorevlisi = NULL;
+
+                sprintf(oilPressureError.faultExplanation, "Yağ basıncı %d%%'nin altına düştü. Yağ basıncı düşük uyarısı!",
+                        oilPressure);
+
+                // Hata bilgilerini dizisine ekle
+                for (int j = 0; j < 100; ++j) {
+                    if (!faults[j].isThereProblem) {
+                        faults[j] = oilPressureError;
+                        break;
+                    }
+                }
+
+                // Kullanıcıyı uyar
+                printf("Uyarı: Yağ basıncı düşük! Hata ID: %d, Seviye: %s\n",
+                       oilPressureError.faultID, "HAFİF");
+            } else {
+                // Yağ basıncı sorunu olmadığında
+                struct Fault oilPressureError;
+                oilPressureError.isThereProblem = false;
+            }
+        }
+    }
+}
+    
+
+void listAssignedFaults(struct Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
+    printf("Atanan Gorevlilere Ait Hatalar:\n");
+
+    for (int i = 0; i < faultCount; ++i) {
+        if (faults[i].duzeltmeGorevlisi != NULL && faults[i].duzeltmeGorevlisi->personID == duzeltmeGorevlisiID) {
+            printf("Hata ID: %d - Hata Tipi: %d - Hata Seviyesi: %d - Hata Aciklama: %s\n", 
+                   faults[i].faultID, faults[i].type, faults[i].level, faults[i].faultExplanation);
+        }
+    }
+}
+
+void listUnrepairedProblems(struct Fault *faults, int faultCount) {
+    printf("Onarilmamis Sorunlar:\n");
+    for (int i = 0; i < faultCount; ++i) {
+        if (faults[i].isThereProblem && !faults[i].isRepaired) {
+            printf("Hata ID: %d, Tip: %d, Seviye: %d\n", 
+                   faults[i].faultID, faults[i].type, faults[i].level);
+        }
+    }
+}
+
+void listRepairedProblems(struct Fault *faults, int faultCount) {
+    printf("Onarilmis Sorunlar:\n");
+    for (int i = 0; i < faultCount; ++i) {
+        if (faults[i].isThereProblem && faults[i].isRepaired) {
+            printf("Hata ID: %d, Tip: %d, Seviye: %d\n", 
+                   faults[i].faultID, faults[i].type, faults[i].level);
+        }
+    }
+}
+
+
+

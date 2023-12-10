@@ -5,24 +5,24 @@
 enum ShipDepartmentType {
     MOTOR,
     GOVDE,
-    YAKIT_TANKI,
+    YAG_TANKI,
     SU_TANKI,
     // ... diğer gemi bölüm tipleri
 };
 
-typedef struct {
-    int departmentID;
-    char departmentName[50];
-    enum ShipDepartmentType departmentType;
-    int waterTemp;
-} ShipDepartment;
+
 
 typedef struct {
     int shipID;
     char shipName[50];
-    ShipDepartment shipDepartments[5];
-    // ... diğer özellikler
-} Ship;
+    enum ShipDepartmentType departmentType;
+    int waterTemp;
+    int waterLevel;
+    int oilPressure;
+    
+   // ... diğer özellikler
+ } Ship;
 
+struct Ship *createShip(int shipID, const char *shipName);
 
 #endif // SHIP_H
