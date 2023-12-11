@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Ship *createShip(int shipID, const char *shipName) {
-    struct Ship *newShip = (struct Ship *)malloc(sizeof(struct Ship));
+Ship *createShip(int shipID, const char *shipName) {
+    Ship *newShip = (Ship *)malloc(sizeof(Ship));
 
     if (newShip == NULL) {
         // Bellek tahsisi başarısız oldu

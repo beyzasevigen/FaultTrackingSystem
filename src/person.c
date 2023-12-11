@@ -1,21 +1,23 @@
-
-#include "../headers/fault.h"
 #include "../headers/person.h"
+#include "../headers/fault.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void assignDuzeltmeGorevlisi(struct Fault *fault, int duzeltmeGorevlisiID) {
+
+void assignDuzeltmeGorevlisi( Fault *fault, int duzeltmeGorevlisiID) {
     // Hataya düzeltme görevlisi atama işlemleri
-    if (fault->duzeltmeGorevlisi != NULL && fault->duzeltmeGorevlisi->type == KONTROL_GOREVLISI) {
+    if (fault->duzeltmeGorevlisi != NULL && fault->duzeltmeGorevlisi->type== KONTROL_GOREVLISI) {
         // Hata: Düzeltme görevlisi zaten atanmış ve kontrol görevlisi ise
         printf("Error: The assigned person is already a control officer.\n");
     } else {
         // Atama işlemini gerçekleştir
-        fault->duzeltmeGorevlisi.personID = duzeltmeGorevlisiID;
+        fault->duzeltmeGorevlisi->type= duzeltmeGorevlisiID;
     }
 }
 
 
-void markFaultsAsRepairedByPersonID(struct Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
+void markFaultsAsRepairedByPersonID(Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].isThereProblem && !faults[i].isRepaired && faults[i].duzeltmeGorevlisi != NULL &&
             faults[i].duzeltmeGorevlisi->personID == duzeltmeGorevlisiID) {
@@ -24,15 +26,15 @@ void markFaultsAsRepairedByPersonID(struct Fault *faults, int faultCount, int du
     }
 }
 
-struct Person *createPerson(int personID, const char *personName, const char *username, const char *password, enum PersonType type) {
-    struct Person *newPerson = (struct Person *)malloc(sizeof(struct Person));
+Person *createPerson(int personID, const char *personName, const char *username, const char *password, enum PersonType type) {
+    Person *newPerson = (Person*)malloc(sizeof(Person));
 
     if (newPerson == NULL) {
         // Bellek tahsisi başarısız oldu
         return NULL;
     }
 
-    newPerson->personID = personID;
+    newPerson->personID = personID; 
     strncpy(newPerson->personName, personName, sizeof(newPerson->personName) - 1);
     strncpy(newPerson->username, username, sizeof(newPerson->username) - 1);
     strncpy(newPerson->password, password, sizeof(newPerson->password) - 1);

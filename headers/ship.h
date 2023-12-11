@@ -23,6 +23,6 @@ typedef struct {
    // ... diğer özellikler
  } Ship;
 
-struct Ship *createShip(int shipID, const char *shipName);
+Ship *createShip(int shipID, const char *shipName);
 
 #endif // SHIP_H

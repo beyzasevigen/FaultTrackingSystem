@@ -2,13 +2,13 @@
 #include "../headers/ship.h"
 #include <stdio.h>
 
-void waterTempControl(Ship *ship, struct Fault *faults, int waterTemp) {
+void waterTempControl(Ship *ship, Fault *faults, int waterTemp) {
     for (int i = 0; i < 5; ++i) { // Varsayılan olarak 5 bölümü varsayalım
         if (ship->departmentType == MOTOR) {
             // Su sıcaklığı kontrolü
             if (ship->waterTemp > 100) {
                 // Hararet hatası
-                struct Fault tempError;
+                Fault tempError;
                 tempError.faultID = 1; // Örnek bir hata ID üretme fonksiyonu
                 tempError.type = HARARET;
                 tempError.level = SEVERE;
@@ -30,18 +30,18 @@ void waterTempControl(Ship *ship, struct Fault *faults, int waterTemp) {
                        tempError.faultID, "MOTOR", "CİDDİ");
             }   else {
                 // Su sıcaklığı sorunu olmadığında
-                struct Fault tempError;
+                Fault tempError;
                 tempError.isThereProblem = false; // Hata yok
             }
         }
     }
 }
 
-void waterLevelControl(Ship *ship, struct Fault *faults, int waterLevel) {
+void waterLevelControl(Ship *ship, Fault *faults, int waterLevel) {
     if (ship->departmentType == SU_TANKI) {
         if (ship->waterLevel < 30) {
             // Su seviyesi hatası
-            struct Fault waterLevelError;
+            Fault waterLevelError;
             waterLevelError.faultID = 2;
             waterLevelError.type = SU_SEVİYESİ; // Örnek bir hata tipi, uygun olanı seçiniz
             waterLevelError.level = SEVERE; // Örnek bir hata seviyesi, uygun olanı seçiniz
@@ -63,14 +63,14 @@ void waterLevelControl(Ship *ship, struct Fault *faults, int waterLevel) {
         }
     }
 
-void oilPressureControl(Ship *ship, struct Fault *faults, int oilPressure) {
+void oilPressureControl(Ship *ship, Fault *faults, int oilPressure) {
     for (int i = 0; i < 5; ++i) {
         if (ship->departmentType == YAG_TANKI) {
             // Yağ basıncı kontrolü
 
             if (oilPressure < 20) {
                 // Yağ basıncı düşük uyarısı
-                struct Fault oilPressureError;
+                Fault oilPressureError;
                 oilPressureError.faultID = 3;
                 oilPressureError.type = YAG_BASINCI;
                 oilPressureError.level = SLIGHT;
@@ -94,7 +94,7 @@ void oilPressureControl(Ship *ship, struct Fault *faults, int oilPressure) {
                        oilPressureError.faultID, "HAFİF");
             } else {
                 // Yağ basıncı sorunu olmadığında
-                struct Fault oilPressureError;
+                Fault oilPressureError;
                 oilPressureError.isThereProblem = false;
             }
         }
@@ -102,7 +102,7 @@ void oilPressureControl(Ship *ship, struct Fault *faults, int oilPressure) {
 }
     
 
-void listAssignedFaults(struct Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
+void listAssignedFaults(Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
     printf("Atanan Gorevlilere Ait Hatalar:\n");
 
     for (int i = 0; i < faultCount; ++i) {
@@ -113,7 +113,7 @@ void listAssignedFaults(struct Fault *faults, int faultCount, int duzeltmeGorevl
     }
 }
 
-void listUnrepairedProblems(struct Fault *faults, int faultCount) {
+void listUnrepairedProblems(Fault *faults, int faultCount) {
     printf("Onarilmamis Sorunlar:\n");
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].isThereProblem && !faults[i].isRepaired) {
@@ -123,7 +123,7 @@ void listUnrepairedProblems(struct Fault *faults, int faultCount) {
     }
 }
 
-void listRepairedProblems(struct Fault *faults, int faultCount) {
+void listRepairedProblems(Fault *faults, int faultCount) {
     printf("Onarilmis Sorunlar:\n");
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].isThereProblem && faults[i].isRepaired) {

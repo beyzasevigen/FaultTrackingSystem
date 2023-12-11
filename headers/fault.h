@@ -3,16 +3,16 @@
 #define FAULT_H
 
 #include <stdbool.h>
-#include "../headers/ship.h"
-#include "../headers/person.h"
+#include "ship.h"
+#include "person.h"
 
-struct Ship;
-struct Person;
+typedef struct Ship;
+typedef struct Person;
 
 enum FaultLevel {
     SLIGHT,
     MEDIUM,
-    SEVERE
+    SEVERE,
 };
 
 enum FaultType {
@@ -29,12 +29,11 @@ typedef struct Fault{
     enum FaultLevel level;
     bool isRepaired;
     bool isThereProblem;
-    struct Person *duzeltmeGorevlisi;
+    Person *duzeltmeGorevlisi;
     // ... diğer özellikler
 } Fault;
 
-void waterTempControl(Ship *ship, struct Fault *faults, int waterTemp);
-void waterLevelControl(Ship *ship, struct Fault *faults, int waterLevel);
-void oilPressureControl(Ship *ship, struct Fault *faults, int oilPressure);
-
+void waterTempControl(Ship *ship,  Fault *faults, int waterTemp);
+void waterLevelControl(Ship *ship,  Fault *faults, int waterLevel);
+void oilPressureControl(Ship *ship,  Fault *faults, int oilPressure);
 #endif // FAULT_H
