@@ -1,22 +1,20 @@
 #include "../headers/fault.h"
-#include "../headers/ship.h"
-#include <stdio.h>
 
 void waterTempControl(Ship *ship, Fault *faults, int waterTemp) {
-    for (int i = 0; i < 5; ++i) { // Varsayılan olarak 5 bölümü varsayalım
-        if (ship->departmentType == MOTOR) {
+    
+        //if (ship->departmentType == MOTOR) {
             // Su sıcaklığı kontrolü
             if (ship->waterTemp > 100) {
                 // Hararet hatası
                 Fault tempError;
                 tempError.faultID = 1; // Örnek bir hata ID üretme fonksiyonu
-                tempError.type = HARARET;
+                tempError.type = TEMPERATURE;
                 tempError.level = SEVERE;
                 tempError.isRepaired = false;
                 tempError.isThereProblem = true;
                 tempError.duzeltmeGorevlisi = NULL; // İlk başta atanmamış.
-
-                sprintf(tempError.faultExplanation, "Su sıcaklığı %d dereceye ulaştı. Hararet hatası!", ship->waterTemp);
+                tempError.waterTempControl= waterTempControl;
+                sprintf(tempError.faultExplanation, "The water temperature reached %d degrees. Temperature error!", ship->waterTemp);
                 
                 for (int j = 0; j < 100; ++j) {
                     if (!faults[j].isThereProblem) {
@@ -26,30 +24,27 @@ void waterTempControl(Ship *ship, Fault *faults, int waterTemp) {
 
                 }
                 // Kullanıcıyı uyar
-                printf("Uyarı: Gemide hararet hatası! Hata ID: %d, hatalı bölüm: %s\n, Seviye: %s\n", 
-                       tempError.faultID, "MOTOR", "CİDDİ");
-            }   else {
-                // Su sıcaklığı sorunu olmadığında
-                Fault tempError;
-                tempError.isThereProblem = false; // Hata yok
-            }
+                printf("Warning: Temperature error on board! Error ID: %d\n, faulty section: %s\n, Level: %s\n", 
+                       tempError.faultID, "MOTOR", "SEVERE");
+            }   
         }
-    }
-}
+    //}
+
 
 void waterLevelControl(Ship *ship, Fault *faults, int waterLevel) {
-    if (ship->departmentType == SU_TANKI) {
-        if (ship->waterLevel < 30) {
+    //if (ship->departmentType == SU_TANKI) {
+        if (ship->waterLevel > 30) {
             // Su seviyesi hatası
             Fault waterLevelError;
             waterLevelError.faultID = 2;
-            waterLevelError.type = SU_SEVİYESİ; // Örnek bir hata tipi, uygun olanı seçiniz
+            waterLevelError.type = WATER_LEVEL; // Örnek bir hata tipi, uygun olanı seçiniz
             waterLevelError.level = SEVERE; // Örnek bir hata seviyesi, uygun olanı seçiniz
             waterLevelError.isRepaired = false;
             waterLevelError.isThereProblem = true;
             waterLevelError.duzeltmeGorevlisi = NULL; // İlk başta atanmamış.
+            waterLevelError.waterTempControl = waterTempControl;
 
-                sprintf(waterLevelError.faultExplanation, "Su seviyesi %f%%'nın altına düştü. Su seviyesi hatası!", waterLevel);
+                sprintf(waterLevelError.faultExplanation, "The water level dropped below %f%%. Water level error!", waterLevel);
 
                 for (int j = 0; j < 100; ++j) {
                     if (!faults[j].isThereProblem) {
@@ -58,27 +53,27 @@ void waterLevelControl(Ship *ship, Fault *faults, int waterLevel) {
                     }       
                 }
 
-                printf("Uyarı: Su seviyesi hatası! Hata ID: %d, Seviye: %s\n", waterLevelError.faultID, "CİDDİ");
+                printf("Warning: Water level error! Error ID: %d, Level: %s\n", waterLevelError.faultID, "SEVERE");
             }
         }
-    }
+    //}
 
 void oilPressureControl(Ship *ship, Fault *faults, int oilPressure) {
-    for (int i = 0; i < 5; ++i) {
-        if (ship->departmentType == YAG_TANKI) {
+    
+        //if (ship->departmentType == YAG_TANKI) {
             // Yağ basıncı kontrolü
 
-            if (oilPressure < 20) {
+            if (oilPressure > 20) {
                 // Yağ basıncı düşük uyarısı
                 Fault oilPressureError;
                 oilPressureError.faultID = 3;
-                oilPressureError.type = YAG_BASINCI;
+                oilPressureError.type = OIL_PRESSURE;
                 oilPressureError.level = SLIGHT;
                 oilPressureError.isRepaired = false;
                 oilPressureError.isThereProblem = true;
                 oilPressureError.duzeltmeGorevlisi = NULL;
 
-                sprintf(oilPressureError.faultExplanation, "Yağ basıncı %d%%'nin altına düştü. Yağ basıncı düşük uyarısı!",
+                sprintf(oilPressureError.faultExplanation, "Oil pressure dropped below %d%%. Low oil pressure warning!",
                         oilPressure);
 
                 // Hata bilgilerini dizisine ekle
@@ -90,44 +85,59 @@ void oilPressureControl(Ship *ship, Fault *faults, int oilPressure) {
                 }
 
                 // Kullanıcıyı uyar
-                printf("Uyarı: Yağ basıncı düşük! Hata ID: %d, Seviye: %s\n",
-                       oilPressureError.faultID, "HAFİF");
-            } else {
-                // Yağ basıncı sorunu olmadığında
-                Fault oilPressureError;
-                oilPressureError.isThereProblem = false;
-            }
+                printf("Warning: Oil pressure low! Error ID: %d, Level: %s\n",
+                       oilPressureError.faultID, "SLIGHT");
+            } 
+        }
+    //}
+
+
+void markFaultsAsRepairedByPersonID(Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
+    for (int i = 0; i < faultCount; ++i) {
+        if (faults[i].isThereProblem && !faults[i].isRepaired && faults[i].duzeltmeGorevlisi != NULL &&
+            faults[i].duzeltmeGorevlisi->personID == duzeltmeGorevlisiID) {
+            faults[i].isRepaired = true;
         }
     }
 }
-    
+
+void assignDuzeltmeGorevlisi( Fault *faults, int duzeltmeGorevlisiID) {
+    // Hataya düzeltme görevlisi atama işlemleri
+    if (faults->duzeltmeGorevlisi != NULL && faults->duzeltmeGorevlisi->type== DUZELTME_GOREVLISI) {
+        // Hata: Düzeltme görevlisi zaten atanmış ve kontrol görevlisi ise
+        printf("Error: The assigned person is already a control officer.\n");
+    } else {
+        // Atama işlemini gerçekleştir
+        faults->duzeltmeGorevlisi->personID= duzeltmeGorevlisiID;
+    }
+}
 
 void listAssignedFaults(Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
-    printf("Atanan Gorevlilere Ait Hatalar:\n");
+    printf("Errors Belonging to Appointed Officials:\n");
 
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].duzeltmeGorevlisi != NULL && faults[i].duzeltmeGorevlisi->personID == duzeltmeGorevlisiID) {
-            printf("Hata ID: %d - Hata Tipi: %d - Hata Seviyesi: %d - Hata Aciklama: %s\n", 
+            printf("Error ID: %d - Error Type: %d - Error Level: %d - Error Description: %s\n", 
                    faults[i].faultID, faults[i].type, faults[i].level, faults[i].faultExplanation);
         }
     }
 }
 
 void listUnrepairedProblems(Fault *faults, int faultCount) {
-    printf("Onarilmamis Sorunlar:\n");
+    printf("Unrepaired faults:\n");
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].isThereProblem && !faults[i].isRepaired) {
-            printf("Hata ID: %d, Tip: %d, Seviye: %d\n", 
+            printf("Error ID: %d, Type: %d, Level: %d\n", 
                    faults[i].faultID, faults[i].type, faults[i].level);
         }
     }
 }
 
 void listRepairedProblems(Fault *faults, int faultCount) {
-    printf("Onarilmis Sorunlar:\n");
+    printf("Repaired faults:\n");
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].isThereProblem && faults[i].isRepaired) {
-            printf("Hata ID: %d, Tip: %d, Seviye: %d\n", 
+            printf("Error ID: %d, Type: %d, Level: %d\n", 
                    faults[i].faultID, faults[i].type, faults[i].level);
         }
     }

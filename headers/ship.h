@@ -2,20 +2,20 @@
 #ifndef SHIP_H
 #define SHIP_H
 
-enum ShipDepartmentType {
+/*enum ShipDepartmentType {
     MOTOR,
     GOVDE,
     YAG_TANKI,
     SU_TANKI,
     // ... diğer gemi bölüm tipleri
-};
+};*/
 
 
 
 typedef struct {
     int shipID;
     char shipName[50];
-    enum ShipDepartmentType departmentType;
+    //enum ShipDepartmentType departmentType;
     int waterTemp;
     int waterLevel;
     int oilPressure;
