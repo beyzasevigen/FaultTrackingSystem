@@ -1,9 +1,16 @@
 #include "../headers/fault.h"
 
+/*static const char *const faults_names[]= {
+    [SLIGHT] = "SLIGHT",
+    [MEDIUM] = "MEDIUM",
+    [SEVERE] = "SEVERE",
+}; */
+
 void waterTempControl(Ship *ship, Fault *faults, int waterTemp) {
     
         //if (ship->departmentType == MOTOR) {
             // Su sıcaklığı kontrolü
+            ship->waterTemp = waterTemp;
             if (ship->waterTemp > 100) {
                 // Hararet hatası
                 Fault tempError;
@@ -13,7 +20,7 @@ void waterTempControl(Ship *ship, Fault *faults, int waterTemp) {
                 tempError.isRepaired = false;
                 tempError.isThereProblem = true;
                 tempError.duzeltmeGorevlisi = NULL; // İlk başta atanmamış.
-                tempError.waterTempControl= waterTempControl;
+                
                 sprintf(tempError.faultExplanation, "The water temperature reached %d degrees. Temperature error!", ship->waterTemp);
                 
                 for (int j = 0; j < 100; ++j) {
@@ -33,7 +40,8 @@ void waterTempControl(Ship *ship, Fault *faults, int waterTemp) {
 
 void waterLevelControl(Ship *ship, Fault *faults, int waterLevel) {
     //if (ship->departmentType == SU_TANKI) {
-        if (ship->waterLevel > 30) {
+        ship->waterLevel=waterLevel;
+        if (ship->waterLevel < 30) {
             // Su seviyesi hatası
             Fault waterLevelError;
             waterLevelError.faultID = 2;
@@ -42,7 +50,7 @@ void waterLevelControl(Ship *ship, Fault *faults, int waterLevel) {
             waterLevelError.isRepaired = false;
             waterLevelError.isThereProblem = true;
             waterLevelError.duzeltmeGorevlisi = NULL; // İlk başta atanmamış.
-            waterLevelError.waterTempControl = waterTempControl;
+            //waterLevelError.waterTempControl = waterTempControl;
 
                 sprintf(waterLevelError.faultExplanation, "The water level dropped below %f%%. Water level error!", waterLevel);
 
@@ -62,8 +70,9 @@ void oilPressureControl(Ship *ship, Fault *faults, int oilPressure) {
     
         //if (ship->departmentType == YAG_TANKI) {
             // Yağ basıncı kontrolü
+            ship->oilPressure=oilPressure;
 
-            if (oilPressure > 20) {
+            if (ship->oilPressure < 20) {
                 // Yağ basıncı düşük uyarısı
                 Fault oilPressureError;
                 oilPressureError.faultID = 3;
@@ -101,22 +110,44 @@ void markFaultsAsRepairedByPersonID(Fault *faults, int faultCount, int duzeltmeG
     }
 }
 
-void assignDuzeltmeGorevlisi( Fault *faults, int duzeltmeGorevlisiID) {
+
+
+void assignDuzeltmeGorevlisi(Fault *faults, int faultID, int duzeltmeGorevlisiID) {
     // Hataya düzeltme görevlisi atama işlemleri
-    if (faults->duzeltmeGorevlisi != NULL && faults->duzeltmeGorevlisi->type== DUZELTME_GOREVLISI) {
-        // Hata: Düzeltme görevlisi zaten atanmış ve kontrol görevlisi ise
-        printf("Error: The assigned person is already a control officer.\n");
+    int hataIndisi = -1;
+
+    // faults dizisi içinde hata kontrolü ve hataID'ye göre indis bulma
+    for (int i = 0; i < 100; ++i) {
+        if (faults[i].isThereProblem && faults[i].faultID == faultID) {
+            hataIndisi = i;
+            break;
+        }
+    }
+
+    // Hata bulunamadıysa
+    if (hataIndisi == -1) {
+        printf("Error: Fault with ID %d not found.\n", faultID);
+        return;
+    }
+
+    // Düzeltme görevlisinin zaten atanmış olup olmadığını kontrol et
+    if (faults[hataIndisi].duzeltmeGorevlisi != NULL && faults[hataIndisi].duzeltmeGorevlisi->type == DUZELTME_GOREVLISI) {
+        printf("Error: The assigned person is already a repair officer.\n");
     } else {
         // Atama işlemini gerçekleştir
-        faults->duzeltmeGorevlisi->personID= duzeltmeGorevlisiID;
+        faults[hataIndisi].duzeltmeGorevlisi = malloc(sizeof(Person));
+        faults[hataIndisi].duzeltmeGorevlisi->personID = duzeltmeGorevlisiID;
+        // Diğer duzeltmeGorevlisi özelliklerini de atayabilirsiniz.
     }
 }
+
 
 void listAssignedFaults(Fault *faults, int faultCount, int duzeltmeGorevlisiID) {
     printf("Errors Belonging to Appointed Officials:\n");
 
     for (int i = 0; i < faultCount; ++i) {
         if (faults[i].duzeltmeGorevlisi != NULL && faults[i].duzeltmeGorevlisi->personID == duzeltmeGorevlisiID) {
+            printf("Assigned officer name: %s, ID: %d\n", faults[i].duzeltmeGorevlisi->personName, faults[i].duzeltmeGorevlisi->personID);
             printf("Error ID: %d - Error Type: %d - Error Level: %d - Error Description: %s\n", 
                    faults[i].faultID, faults[i].type, faults[i].level, faults[i].faultExplanation);
         }

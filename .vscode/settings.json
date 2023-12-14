@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "fault.h": "c",
-        "ship.h": "c"
+        "ship.h": "c",
+        "stdbool.h": "c",
+        "person.h": "c"
     }
 }

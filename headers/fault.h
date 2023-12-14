@@ -32,14 +32,14 @@ typedef struct Fault {
     bool isRepaired;
     bool isThereProblem;
     Person *duzeltmeGorevlisi;
-    void (*waterTempControl)(Ship *ship, struct Fault *faults, int waterTemp)
+    //void (*waterTempControl)(Ship *ship, struct Fault *faults, int waterTemp)
     // ... diğer özellikler
 } Fault;
 
 void waterTempControl(Ship *ship,  Fault *faults, int waterTemp);
 void waterLevelControl(Ship *ship,  Fault *faults, int waterLevel);
 void oilPressureControl(Ship *ship,  Fault *faults, int oilPressure);
-void assignDuzeltmeGorevlisi(Fault *fault, int duzeltmeGorevlisiID);
+void assignDuzeltmeGorevlisi(Fault *fault, int faultID, int duzeltmeGorevlisiID);
 void listRepairedProblems(Fault *faults, int faultCount);
 void listUnrepairedProblems(Fault *faults, int faultCount);
 void listAssignedFaults(Fault *faults, int faultCount, int duzeltmeGorevlisiID);

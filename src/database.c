@@ -16,36 +16,42 @@ int insertPerson(Person person)
         printf("Error while opening the file!");
         return 1;
     }
-    fprintf(file, "%d\n", person.personID);
-    fprintf(file, "%s\n", person.personName);
-    fprintf(file, "%s\n", person.username);
-    fprintf(file, "%s\n", person.password);
+    fprintf(file, "%d ", person.personID);
+    fprintf(file, "%s ", person.personName);
+    fprintf(file, "%s ", person.username);
+    fprintf(file, "%s\n ", person.password);
+   
+    //fprintf(file, "%d\n", person.type);
 
     fclose(file);
     return 0;
 }
 
-int readPerson(Person *persons){
+int readPerson(){
+
     FILE *file = fopen("person.txt", "r");
 
     if (file == NULL)
     {
         printf("Error while opening the file!");
         return 1;
+
     }
 
     userCount = 0;
 
-    while (fscanf(file, "%d\n%s\n%s\n%s\n", 
-                  &persons[userCount].personID, 
-                  persons[userCount].personName, 
-                  persons[userCount].username, 
-                  persons[userCount].password) == 4)
+    while (fscanf(file, "%d %s %s %s\n", 
+                  &people[userCount].personID, 
+                  people[userCount].personName, 
+                  people[userCount].username, 
+                  people[userCount].password) == 4
+                  )
     {
         userCount++;
     }
 
     fclose(file);
+    
     return 0;
 }
 
@@ -59,6 +65,7 @@ int deletePersonFromFile(int personID) {
     }
 
     Person currentPerson;
+    int found = 0;
 
     // Dosyadan kişileri oku ve silmek istediğimiz kişiyi dışarıda tut
     while (fscanf(inputFile, "%d %s %s %s %d",
@@ -68,7 +75,9 @@ int deletePersonFromFile(int personID) {
                   currentPerson.password,
                   &currentPerson.type) == 5) {
 
-        if (currentPerson.personID != personID) {
+        if (currentPerson.personID == personID) {
+            found=1;
+        } else {
             // Silmek istediğimiz kişiyi dışarıda tut
             fprintf(outputFile, "%d %s %s %s %d\n",
                     currentPerson.personID,
@@ -87,26 +96,28 @@ int deletePersonFromFile(int personID) {
     remove("person.txt");
     rename("temp_person.txt", "person.txt");
 
+    if (found) {
+        readPerson();
+    }
+
     return 0;
 }
 
+Person *login(char *username, char *password)
+{
 
-/*void loadPeopleDataFromFile() {
-    FILE *file = fopen("person.txt", "r");
-    if (file == NULL) {
-        printf("person information cannot read!\n");
-        return;
+    for (int i = 0; i < userCount; i++)
+    {
+        if (strcmp(people[i].username, username) == 0 && strcmp(people[i].password, password) == 0)
+        {
+            return &people[i];
+        }
     }
+    Person *nullP = NULL;
+    return nullP;
+}
 
-    // Dosyadan verilerini okuyun ve veritabanına ekleyin
-    while (fscanf(file, "%d %s %s %s %d", 
-    &people[userCount].personID, 
-    people[userCount].personName, 
-    people[userCount].username, 
-    people[userCount].password, 
-    (int *)&people[userCount].type) == 5) {
-        userCount++;
-    }
 
-    fclose(file);
-}*/
+
+
+
